@@ -4,49 +4,34 @@ const { exec } = require('child_process');
 const os = require('os');
 
 const environment = process.argv[2] || 'local';
+const platformArg = process.argv[3] || null;
 const envFileName = `.env.${environment}`;
 
 console.log(`Starting with environment file: ${envFileName}`);
 
-const startCommand = `ENVFILE=${envFileName} yarn start`;
+// Determine the platform to run based on the OS or the provided platform argument. 
+// For macOS (darwin) without any platform argument, it'll default to iOS.
+// If a platform argument is provided, it'll be used.
+const platformCommand = platformArg === 'android'
+    ? `ENVFILE=${envFileName} react-native run-android`
+    : (platformArg === 'ios' || os.platform() === 'darwin')
+    ? `ENVFILE=${envFileName} react-native run-ios`
+    : `ENVFILE=${envFileName} react-native run-android`;
 
-console.log('Attempting to start Metro bundler...');
+console.log(`Attempting to start the app on ${platformArg || (os.platform() === 'darwin' ? 'iOS' : 'Android')}...`);
 
-const metroBundlerProcess = exec(startCommand);
+const appProcess = exec(platformCommand);
 
-metroBundlerProcess.stdout.on('data', (data) => {
+appProcess.stdout.on('data', (data) => {
     process.stdout.write(data);
 });
 
-metroBundlerProcess.stderr.on('data', (data) => {
+appProcess.stderr.on('data', (data) => {
     process.stderr.write(data);
 });
 
-metroBundlerProcess.on('exit', (code) => {
+appProcess.on('exit', (code) => {
     if (code !== 0) {
-        console.error(`Error starting Metro bundler with exit code ${code}`);
-        return;
+        console.error(`Error starting app with exit code ${code}`);
     }
-
-    console.log('Metro bundler started!');
-
-    const platformCommand = os.platform() === 'darwin' ? `ENVFILE=${envFileName} yarn ios` : `ENVFILE=${envFileName} yarn android`;
-
-    console.log(`Attempting to start the app on ${os.platform() === 'darwin' ? 'iOS' : 'Android'}...`);
-
-    const platformProcess = exec(platformCommand);
-
-    platformProcess.stdout.on('data', (data) => {
-        process.stdout.write(data);
-    });
-
-    platformProcess.stderr.on('data', (data) => {
-        process.stderr.write(data);
-    });
-
-    platformProcess.on('exit', (code) => {
-        if (code !== 0) {
-            console.error(`Error starting app with exit code ${code}`);
-        }
-    });
 });

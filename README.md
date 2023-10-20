@@ -1,6 +1,6 @@
 # rn-env-starter
 
-A simple CLI tool to seamlessly start your React Native app with different environment configurations. It will handle your environment settings and decide whether to run the app on iOS or Android based on your operating system.
+A simple CLI tool to seamlessly start your React Native app with different environment configurations. It will handle your environment settings and decide whether to run the app on iOS or Android based on your operating system or the platform argument provided.
 
 
 ## Installation
@@ -48,17 +48,24 @@ ANOTHER_CONFIG=SomeValue
 Navigate to your React Native project directory and run:
 
 ```bash
-rn-start [environmentName]
+rn-start [environmentName] [platform]
 ```
 
 
-For example:
+### For example:
+
+    To start the local environment for the default platform based on OS:
 
 ```bash
 rn-start local
 ```
 
-The command above will utilize the .env.local file for environment configurations and then launch the appropriate version of the app.
+To specify both an environment and a platform:
+```bash
+rn-start local android
+```
+
+The command above will utilize the .env.local file for environment configurations and then launch the appropriate version of the app on the specified platform (iOS or Android).
 
 ## Note
 
