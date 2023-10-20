@@ -1,0 +1,22 @@
+{
+  "name": "rn-env-starter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "rn-start": "./cli.js"
+  },
+  "dependencies": {
+    "react-native-config": "^latest_version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bennekrouf/rn-env-starter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
