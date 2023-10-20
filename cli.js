@@ -12,9 +12,19 @@ const startCommand = `ENVFILE=${envFileName} yarn start`;
 
 console.log('Attempting to start Metro bundler...');
 
-exec(startCommand, (error) => {
-    if (error) {
-        console.error(`Error starting Metro bundler: ${error}`);
+const metroBundlerProcess = exec(startCommand);
+
+metroBundlerProcess.stdout.on('data', (data) => {
+    process.stdout.write(data);
+});
+
+metroBundlerProcess.stderr.on('data', (data) => {
+    process.stderr.write(data);
+});
+
+metroBundlerProcess.on('exit', (code) => {
+    if (code !== 0) {
+        console.error(`Error starting Metro bundler with exit code ${code}`);
         return;
     }
 
@@ -24,9 +34,19 @@ exec(startCommand, (error) => {
 
     console.log(`Attempting to start the app on ${os.platform() === 'darwin' ? 'iOS' : 'Android'}...`);
 
-    exec(platformCommand, (error) => {
-        if (error) {
-            console.error(`Error starting app: ${error}`);
+    const platformProcess = exec(platformCommand);
+
+    platformProcess.stdout.on('data', (data) => {
+        process.stdout.write(data);
+    });
+
+    platformProcess.stderr.on('data', (data) => {
+        process.stderr.write(data);
+    });
+
+    platformProcess.on('exit', (code) => {
+        if (code !== 0) {
+            console.error(`Error starting app with exit code ${code}`);
         }
     });
 });
