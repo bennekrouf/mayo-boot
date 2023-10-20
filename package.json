@@ -10,7 +10,7 @@
     "rn-start": "./cli.js"
   },
   "dependencies": {
-    "react-native-config": "^latest_version"
+    "react-native-config": "^1.5.1"
   },
   "repository": {
     "type": "git",
