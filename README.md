@@ -5,9 +5,17 @@ A simple CLI tool to seamlessly start your React Native app with different envir
 
 ## Installation
 
+You can install the package globally for easier access:
+
 ```bash
 npm install -g rn-env-starter
 
+```
+
+However, with the use of npx, it's not strictly necessary to install the package globally. You can run it directly using npx:
+
+```bash
+npx rn-env-starter [environmentName] [platform]
 ```
 
 ## Requirements
