@@ -13,10 +13,10 @@ console.log(`Starting with environment file: ${envFileName}`);
 // For macOS (darwin) without any platform argument, it'll default to iOS.
 // If a platform argument is provided, it'll be used.
 const platformCommand = platformArg === 'android'
-    ? `ENVFILE=${envFileName} react-native run-android`
+    ? `ENVFILE=${envFileName} npx react-native run-android`
     : (platformArg === 'ios' || os.platform() === 'darwin')
-    ? `ENVFILE=${envFileName} react-native run-ios`
-    : `ENVFILE=${envFileName} react-native run-android`;
+    ? `ENVFILE=${envFileName} npx react-native run-ios`
+    : `ENVFILE=${envFileName} npx react-native run-android`;
 
 console.log(`Attempting to start the app on ${platformArg || (os.platform() === 'darwin' ? 'iOS' : 'Android')}...`);
 
