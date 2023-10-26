@@ -8,6 +8,7 @@ import net from 'net'; // Point 2: ES6 import for net
 import { openTerminalWithCommand } from './openTerminalWithCommand';
 import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
 import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS } from './platforms/ios';
+import { killAllMetroInstances } from './killAllMetroInstances';
 
 const environment: string = process.argv[2] || 'local';
 const platformArg: string | null = process.argv[3] || null;
@@ -17,6 +18,8 @@ const getLaunchPackagerPath = (): string => path.join(process.cwd(), 'node_modul
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const operationWithLaunchPackager = async (): Promise<void> => {
+    killAllMetroInstances();
+    
     if (os.platform() === 'linux') {
         // Use the standard command for Linux
         execSync('npx react-native start', { stdio: 'inherit' });
