@@ -1,14 +1,14 @@
 {
-  "name": "rn-launch",
+  "name": "rn-boot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A launcher for existing react-native apps on linux or iOS",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "rn-launch": "./cli.js"
+    "rn-boot": "./cli.js"
   },
   "dependencies": {
     "react-native-config": "^1.5.1"
