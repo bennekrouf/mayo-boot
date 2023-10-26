@@ -2,7 +2,6 @@
 
 A simple CLI tool to seamlessly start your React Native app with different environment configurations. It will handle your environment settings and decide whether to run the app on iOS or Android based on your operating system or the platform argument provided.
 
-
 ## Installation
 
 You can run it directly using npx:

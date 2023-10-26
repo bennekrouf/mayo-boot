@@ -1,6 +1,6 @@
 {
   "name": "rn-boot",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A launcher for running any react-native apps on linux or iOS",
   "main": "dist/index.js",
   "scripts": {

@@ -17,11 +17,19 @@ const getLaunchPackagerPath = (): string => path.join(process.cwd(), 'node_modul
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const operationWithLaunchPackager = async (): Promise<void> => {
+    if (os.platform() === 'linux') {
+        // Use the standard command for Linux
+        execSync('npx react-native start', { stdio: 'inherit' });
+        await sleep(5000);  // Wait for 5 seconds to ensure Metro Bundler starts.
+        return;
+    }
+    
     const launchPackagerPath: string = getLaunchPackagerPath();
     if (await isPortInUse(8081)) {
         console.log('Metro Bundler is already running on port 8081. Skipping...');
         return;
     }
+    
     console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
     openTerminalWithCommand(launchPackagerPath);
     await sleep(5000);  // Wait for 5 seconds to ensure Metro Bundler starts.
