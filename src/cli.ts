@@ -14,6 +14,7 @@ const platformArg: string | null = process.argv[3] || null;
 const envFileName: string = `.env.${environment}`;
 
 const getLaunchPackagerPath = (): string => path.join(process.cwd(), 'node_modules', 'react-native', 'scripts', 'launchPackager.command');
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const operationWithLaunchPackager = async (): Promise<void> => {
     const launchPackagerPath: string = getLaunchPackagerPath();
@@ -23,6 +24,7 @@ const operationWithLaunchPackager = async (): Promise<void> => {
     }
     console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
     openTerminalWithCommand(launchPackagerPath);
+    await sleep(5000);  // Wait for 5 seconds to ensure Metro Bundler starts.
 };
 
 const startApp = (platform: string, envFileName: string): void => {
