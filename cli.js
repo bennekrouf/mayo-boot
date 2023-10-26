@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const { execSync, exec } = require('child_process');
-const os = require('os');
-const path = require('path');
-const ios = require('./platforms/ios');
-const android = require('./platforms/android');
-
-const darwinOS = require('./os/darwin');
-const linuxOS = require('./os/linux');
-const defaultOS = require('./os/default');
+import fs from 'fs';
+import { execSync } from 'child_process';
+import os from 'os';
+import path from 'path';
+import ios from './platforms/ios';
+import android from './platforms/android';
+import darwinOS from './os/darwin';
+import linuxOS from './os/linux';
+import defaultOS from './os/default';
 
 const environment = process.argv[2] || 'local';
 const platformArg = process.argv[3] || null;
@@ -19,81 +18,52 @@ const envFileName = `.env.${environment}`;
     
     const platform = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
     
-    await operationWithLaunchPackager(); // Wait for this to complete before proceeding
+    await operationWithLaunchPackager(); 
     
-    if (platform === 'android') {
-        android.cleanAndroidBuildArtifacts(process.cwd());
-        android.startAndroidApp(process.cwd(), envFileName);
-    } else {
-        ios.cleanXcodeDerivedData();
-        const entryPoint = getEntryPoint();
-        ios.bundleForiOS(entryPoint);
-        startApp(platform, envFileName);
-    }
+    platform === 'android' 
+        ? (android.cleanAndroidBuildArtifacts(process.cwd()), android.startAndroidApp(process.cwd(), envFileName))
+        : (ios.cleanXcodeDerivedData(), ios.bundleForiOS(getEntryPoint()), startApp(platform, envFileName));
 })();
 
-function getLaunchPackagerPath() {
-    return path.join(process.cwd(), 'node_modules', 'react-native', 'scripts', 'launchPackager.command');
-}
+const getLaunchPackagerPath = () => path.join(process.cwd(), 'node_modules', 'react-native', 'scripts', 'launchPackager.command');
 
-async function operationWithLaunchPackager() {
+const operationWithLaunchPackager = async () => {
     const launchPackagerPath = getLaunchPackagerPath();
-    const isPort8081InUse = await isPortInUse(8081);
-    
-    if (isPort8081InUse) {
+    if (await isPortInUse(8081)) {
         console.log('Metro Bundler is already running on port 8081. Skipping...');
         return;
     }
-
     console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
-    
     openTerminalWithCommand(launchPackagerPath);
-}
+};
 
-function startApp(platform, envFileName) {
+const startApp = (platform, envFileName) => {
     const platformCommand = `ENVFILE=${envFileName} npx react-native run-${platform}`;
     console.log(`Attempting to start the app on ${platform}...`);
-    
-    // This will directly execute the command and keep it running in the terminal.
     execSync(platformCommand, { stdio: 'inherit' });
-}
+};
 
-function getEntryPoint() {
+const getEntryPoint = () => {
     const possibleEntryPoints = ['index.js', 'index.ts', 'index.tsx'];
+    return possibleEntryPoints.find(entry => fs.existsSync(path.join(process.cwd(), entry))) || 
+           (() => { throw new Error('No valid entry point (index.js, index.ts, or index.tsx) was found.') })();
+};
 
-    for (let entry of possibleEntryPoints) {
-        if (fs.existsSync(path.join(process.cwd(), entry))) {
-            return entry;
-        }
-    }
-
-    throw new Error('No valid entry point (index.js, index.ts, or index.tsx) was found.');
-}
-
-function isPortInUse(port) {
-    return new Promise((resolve) => {
-        const server = require('net').createServer();
-        server.once('error', function(err) {
-            resolve(err.code === 'EADDRINUSE' ? true : false);
-        });
-        server.once('listening', function() {
-            server.close();
-            resolve(false);
-        });
-        server.listen(port);
+const isPortInUse = port => new Promise(resolve => {
+    const server = require('net').createServer();
+    server.once('error', err => resolve(err.code === 'EADDRINUSE'));
+    server.once('listening', () => {
+        server.close();
+        resolve(false);
     });
-}
+    server.listen(port);
+});
 
-function openTerminalWithCommand(command) {
-    switch(os.platform()) {
-        case 'darwin':
-            darwinOS.openTerminalWithCommand(command);
-            break;
-        case 'linux':
-            linuxOS.openTerminalWithCommand(command);
-            break;
-        default:
-            defaultOS.openTerminalWithCommand();
-            break;
-    }
-}
+const openTerminalWithCommand = command => {
+    const action = {
+        'darwin': () => darwinOS.openTerminalWithCommand(command),
+        'linux': () => linuxOS.openTerminalWithCommand(command),
+        'default': () => defaultOS.openTerminalWithCommand()
+    };
+    (action[os.platform()] || action['default'])();
+};
