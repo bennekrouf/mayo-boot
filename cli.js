@@ -3,12 +3,13 @@ import fs from 'fs';
 import { execSync } from 'child_process';
 import os from 'os';
 import path from 'path';
-import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS } from './platforms/ios';
-import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
 
 import darwinOS from './os/darwin';
 import linuxOS from './os/linux';
 import defaultOS from './os/default';
+
+import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
+import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS } from './platforms/ios';
 
 const environment = process.argv[2] || 'local';
 const platformArg = process.argv[3] || null;
