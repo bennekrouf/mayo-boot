@@ -5,14 +5,7 @@ A simple CLI tool to seamlessly start your React Native app with different envir
 
 ## Installation
 
-You can install the package globally for easier access:
-
-```bash
-npm install -g rn-boot
-
-```
-
-However, with the use of npx, it's not strictly necessary to install the package globally. You can run it directly using npx:
+You can run it directly using npx:
 
 ```bash
 npx rn-boot [environmentName] [platform]
@@ -23,7 +16,7 @@ npx rn-boot [environmentName] [platform]
 This tool assumes you're using __react-native-config__ in your React Native project. If not, install it first:
 
 ```bash
-npm install @react-native-community/cli
+yarn add @react-native-community/cli
 ```
 
 Ensure you have followed the setup guide of react-native-config for iOS and Android.
@@ -56,21 +49,22 @@ ANOTHER_CONFIG=SomeValue
 Navigate to your React Native project directory and run:
 
 ```bash
-rn-start [environmentName] [platform]
+rn-boot [environmentName] [platform]
 ```
 
 
 ### For example:
 
-    To start the local environment for the default platform based on OS:
+To start the local environment for the default platform based on OS:
 
 ```bash
-rn-start local
+rn-boot
 ```
 
 To specify both an environment and a platform:
+
 ```bash
-rn-start local android
+rn-boot staging android
 ```
 
 The command above will utilize the .env.local file for environment configurations and then launch the appropriate version of the app on the specified platform (iOS or Android).
