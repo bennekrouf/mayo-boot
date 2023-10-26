@@ -1,27 +1,14 @@
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
+import os from 'os';
 
-module.exports = {
-    cleanXcodeDerivedData: function() {
-        console.log('Cleaning Xcode derived data...');
-        execSync('rm -rf ~/Library/Developer/Xcode/DerivedData/');
-    },
-    bundleForiOS: function(entryPoint) {
-        console.log('Bundling for iOS...');
-        const bundleCommand = `npx react-native bundle --entry-file='${entryPoint}' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'`;
-        execSync(bundleCommand, { stdio: 'inherit' });
-    },
-    cleanXcodeDerivedData,
-    cleanWatchmanCache,
-};
-
-function cleanXcodeDerivedData() {
+export const cleanXcodeDerivedData = () => {
     if (os.platform() === 'darwin') {  // Check if platform is macOS
         console.log('Cleaning Xcode derived data...');
         execSync('rm -rf ~/Library/Developer/Xcode/DerivedData/');
     }
 }
 
-function cleanWatchmanCache() {
+export const cleanWatchmanCache = () => {
     console.log('Cleaning Watchman cache...');
     const projectPath = process.cwd(); // Get the root directory of the app
 
@@ -36,4 +23,10 @@ function cleanWatchmanCache() {
     } catch (error) {
         console.error('Failed to clean Watchman cache:', error.message);
     }
+}
+
+export const bundleForiOS = (entryPoint) => {
+    console.log('Bundling for iOS...');
+    const bundleCommand = `npx react-native bundle --entry-file='${entryPoint}' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'`;
+    execSync(bundleCommand, { stdio: 'inherit' });
 }
