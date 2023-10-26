@@ -1,4 +1,4 @@
-# rn-env-starter
+# rn-boot
 
 A simple CLI tool to seamlessly start your React Native app with different environment configurations. It will handle your environment settings and decide whether to run the app on iOS or Android based on your operating system or the platform argument provided.
 
@@ -8,14 +8,14 @@ A simple CLI tool to seamlessly start your React Native app with different envir
 You can install the package globally for easier access:
 
 ```bash
-npm install -g rn-env-starter
+npm install -g rn-boot
 
 ```
 
 However, with the use of npx, it's not strictly necessary to install the package globally. You can run it directly using npx:
 
 ```bash
-npx rn-env-starter [environmentName] [platform]
+npx rn-boot [environmentName] [platform]
 ```
 
 ## Requirements

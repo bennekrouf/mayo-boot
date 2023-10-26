@@ -1,6 +1,6 @@
 {
   "name": "rn-boot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A launcher for existing react-native apps on linux or iOS",
   "main": "index.js",
   "type": "module",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bennekrouf/rn-env-starter.git"
+    "url": "git+https://github.com/bennekrouf/rn-boot.git"
   },
   "keywords": [],
   "author": "",
