@@ -3,7 +3,8 @@ import fs from 'fs';
 import { execSync } from 'child_process';
 import os from 'os';
 import path from 'path';
-import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS } from './path_to_ios.js';
+import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS } from './platforms/ios';
+import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
 
 import darwinOS from './os/darwin';
 import linuxOS from './os/linux';
@@ -22,7 +23,7 @@ const envFileName = `.env.${environment}`;
     
     platform === 'android' 
         ? (cleanAndroidBuildArtifacts(process.cwd()), startAndroidApp(process.cwd(), envFileName))
-        : (cleanXcodeDerivedData(), bundleForiOS(getEntryPoint()), startApp(platform, envFileName));
+        : (cleanXcodeDerivedData(), cleanWatchmanCache(), bundleForiOS(getEntryPoint()), startApp(platform, envFileName));
 })();
 
 const getLaunchPackagerPath = () => path.join(process.cwd(), 'node_modules', 'react-native', 'scripts', 'launchPackager.command');
