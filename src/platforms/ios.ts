@@ -20,12 +20,12 @@ export const cleanWatchmanCache = () => {
         execSync(`watchman watch-del '${projectPath}'`, { stdio: 'inherit' });
         execSync(`watchman watch-project '${projectPath}'`, { stdio: 'inherit' });
         
-    } catch (error) {
-        console.error('Failed to clean Watchman cache:', error.message);
+    } catch (error:any) {
+        console.error('Failed to clean Watchman cache:', error?.message);
     }
 }
 
-export const bundleForiOS = (entryPoint) => {
+export const bundleForiOS = (entryPoint:any) => {
     console.log('Bundling for iOS...');
     const bundleCommand = `npx react-native bundle --entry-file='${entryPoint}' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'`;
     execSync(bundleCommand, { stdio: 'inherit' });
