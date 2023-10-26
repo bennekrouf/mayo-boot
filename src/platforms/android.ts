@@ -10,9 +10,9 @@ export const cleanAndroidBuildArtifacts = (processCwd: string): void => {
 };
 
 export const startAndroidApp = (processCwd: string, envFileName: string): void => {
-    const startMetroBundler = `cd ${processCwd} && ENVFILE=${envFileName} npx react-native start`;
+    const startMetroBundler = `cd ${processCwd} && ENVFILE=${envFileName} npx react-native start &`; // Notice the '&' at the end
     const startAndroidAppCmd = `cd ${processCwd} && ENVFILE=${envFileName} npx react-native run-android`;
-    const consolidatedCommand = `${startMetroBundler} && ${startAndroidAppCmd}`;
+    const consolidatedCommand = `${startMetroBundler} ${startAndroidAppCmd}`;
 
-    openTerminalWithCommand(consolidatedCommand);
+    execSync(consolidatedCommand, { stdio: 'inherit' });
 };
