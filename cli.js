@@ -57,20 +57,21 @@ function operationWithLaunchPackager() {
 }
 
 function startAndroidApp() {
-    // Start Metro Bundler in a new terminal window.
+    // Consolidate Metro Bundler and Android app start commands.
     const startMetroBundler = `cd ${process.cwd()} && ENVFILE=${envFileName} npx react-native start`;
+    const startAndroidAppCmd = `cd ${process.cwd()} && ENVFILE=${envFileName} npx react-native run-android`;
+    const consolidatedCommand = `${startMetroBundler} && ${startAndroidAppCmd}`;
     
     switch(os.platform()) {
         case 'darwin':
-            exec(`osascript -e 'tell app "Terminal" to do script "${startMetroBundler}"'`);
+            exec(`osascript -e 'tell app "Terminal" to do script "${consolidatedCommand}"'`);
             break;
         case 'linux':
-            // Attempting a sequence of popular Linux terminals until one is found.
             const terminals = ["gnome-terminal", "konsole", "xterm", "terminator", "uxterm", "rxvt"];
             for (let terminal of terminals) {
                 try {
                     execSync(`which ${terminal}`);
-                    exec(`${terminal} -e 'bash -c "${startMetroBundler}; bash"'`);
+                    exec(`${terminal} -e 'bash -c "${consolidatedCommand}; bash"'`);
                     break;
                 } catch (e) {
                     // Do nothing, we'll just try the next terminal.
@@ -81,11 +82,6 @@ function startAndroidApp() {
             console.log('Please ensure Metro Bundler is running.');
             break;
     }
-
-    // Provide a short delay for Metro Bundler to initialize.
-    setTimeout(() => {
-        startApp('android', envFileName);
-    }, 5000);
 }
 
 function startApp(platform, envFileName) {
