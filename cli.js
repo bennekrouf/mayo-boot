@@ -3,6 +3,12 @@ const fs = require('fs');
 const { execSync, exec } = require('child_process');
 const os = require('os');
 const path = require('path');
+const ios = require('./platforms/ios');
+const android = require('./platforms/android');
+
+const darwinOS = require('./os/darwin');
+const linuxOS = require('./os/linux');
+const defaultOS = require('./os/default');
 
 const environment = process.argv[2] || 'local';
 const platformArg = process.argv[3] || null;
@@ -16,12 +22,12 @@ const envFileName = `.env.${environment}`;
     await operationWithLaunchPackager(); // Wait for this to complete before proceeding
     
     if (platform === 'android') {
-        cleanAndroidBuildArtifacts();
-        startAndroidApp();
+        android.cleanAndroidBuildArtifacts(process.cwd());
+        android.startAndroidApp(process.cwd(), envFileName);
     } else {
-        cleanWatchmanCache();
-        cleanXcodeDerivedData();
-        bundleForiOS(); // bundle assets for iOS
+        ios.cleanXcodeDerivedData();
+        const entryPoint = getEntryPoint();
+        ios.bundleForiOS(entryPoint);
         startApp(platform, envFileName);
     }
 })();
@@ -44,41 +50,12 @@ async function operationWithLaunchPackager() {
     openTerminalWithCommand(launchPackagerPath);
 }
 
-function startAndroidApp() {
-    const startMetroBundler = `cd ${process.cwd()} && ENVFILE=${envFileName} npx react-native start`;
-    const startAndroidAppCmd = `cd ${process.cwd()} && ENVFILE=${envFileName} npx react-native run-android`;
-    const consolidatedCommand = `${startMetroBundler} && ${startAndroidAppCmd}`;
-    
-    openTerminalWithCommand(consolidatedCommand);
-}
-
 function startApp(platform, envFileName) {
     const platformCommand = `ENVFILE=${envFileName} npx react-native run-${platform}`;
     console.log(`Attempting to start the app on ${platform}...`);
     
     // This will directly execute the command and keep it running in the terminal.
     execSync(platformCommand, { stdio: 'inherit' });
-}
-
-function cleanXcodeDerivedData() {
-    if (os.platform() === 'darwin') {  // Check if platform is macOS
-        console.log('Cleaning Xcode derived data...');
-        execSync('rm -rf ~/Library/Developer/Xcode/DerivedData/');
-    }
-}
-
-function cleanAndroidBuildArtifacts() {
-    console.log('Cleaning Android build artifacts...');
-    const androidDir = path.join(process.cwd(), 'android');
-    execSync(`rm -rf ${path.join(androidDir, '.gradle')}`);
-    execSync(`rm -rf ${path.join(androidDir, 'app', 'build')}`);
-}
-
-function bundleForiOS() {
-    console.log('Bundling for iOS...');
-    const entryPoint = getEntryPoint();
-    const bundleCommand = `npx react-native bundle --entry-file='${entryPoint}' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'`;
-    execSync(bundleCommand, { stdio: 'inherit' });
 }
 
 function getEntryPoint() {
@@ -93,32 +70,11 @@ function getEntryPoint() {
     throw new Error('No valid entry point (index.js, index.ts, or index.tsx) was found.');
 }
 
-function cleanWatchmanCache() {
-    console.log('Cleaning Watchman cache...');
-    const projectPath = process.cwd(); // Get the root directory of the app
-
-    try {
-        execSync('watchman watch-del-all', { stdio: 'inherit' });
-        execSync('watchman shutdown-server', { stdio: 'inherit' });
-        
-        console.log(`Resetting Watchman watch for ${projectPath}...`);
-        execSync(`watchman watch-del '${projectPath}'`, { stdio: 'inherit' });
-        execSync(`watchman watch-project '${projectPath}'`, { stdio: 'inherit' });
-        
-    } catch (error) {
-        console.error('Failed to clean Watchman cache:', error.message);
-    }
-}
-
 function isPortInUse(port) {
     return new Promise((resolve) => {
         const server = require('net').createServer();
         server.once('error', function(err) {
-            if (err.code === 'EADDRINUSE') {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
+            resolve(err.code === 'EADDRINUSE' ? true : false);
         });
         server.once('listening', function() {
             server.close();
@@ -128,26 +84,16 @@ function isPortInUse(port) {
     });
 }
 
-// New function to consolidate the terminal opening logic
 function openTerminalWithCommand(command) {
     switch(os.platform()) {
         case 'darwin':
-            exec(`osascript -e 'tell app "Terminal" to do script "${command}"'`);
+            darwinOS.openTerminalWithCommand(command);
             break;
         case 'linux':
-            const terminals = ["gnome-terminal", "konsole", "xterm", "terminator", "uxterm", "rxvt"];
-            for (let terminal of terminals) {
-                try {
-                    execSync(`which ${terminal}`);
-                    exec(`${terminal} -e 'bash -c "${command}; bash"'`);
-                    break;  // Exit loop once a terminal is found and the command is executed
-                } catch (e) {
-                    // Do nothing, we'll just try the next terminal.
-                }
-            }
+            linuxOS.openTerminalWithCommand(command);
             break;
         default:
-            console.log('Unsupported OS. Please ensure Metro Bundler is running.');
+            defaultOS.openTerminalWithCommand();
             break;
     }
 }
