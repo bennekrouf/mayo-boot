@@ -8,80 +8,48 @@ const environment = process.argv[2] || 'local';
 const platformArg = process.argv[3] || null;
 const envFileName = `.env.${environment}`;
 
-console.log(`Starting with environment file: ${envFileName}`);
-
-const platform = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
-
-operationWithLaunchPackager(); // Start the Metro Bundler right after the initial setup.
-
-if (platform === 'android') {
-    cleanAndroidBuildArtifacts();
-    startAndroidApp();
-} else {
-    cleanWatchmanCache();
-    cleanXcodeDerivedData();
-    bundleForiOS(); // bundle assets for iOS
-    startApp(platform, envFileName);
-}
+(async () => {
+    console.log(`Starting with environment file: ${envFileName}`);
+    
+    const platform = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
+    
+    await operationWithLaunchPackager(); // Wait for this to complete before proceeding
+    
+    if (platform === 'android') {
+        cleanAndroidBuildArtifacts();
+        startAndroidApp();
+    } else {
+        cleanWatchmanCache();
+        cleanXcodeDerivedData();
+        bundleForiOS(); // bundle assets for iOS
+        startApp(platform, envFileName);
+    }
+})();
 
 function getLaunchPackagerPath() {
     return path.join(process.cwd(), 'node_modules', 'react-native', 'scripts', 'launchPackager.command');
 }
 
-function operationWithLaunchPackager() {
+async function operationWithLaunchPackager() {
     const launchPackagerPath = getLaunchPackagerPath();
+    const isPort8081InUse = await isPortInUse(8081);
     
+    if (isPort8081InUse) {
+        console.log('Metro Bundler is already running on port 8081. Skipping...');
+        return;
+    }
+
     console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
     
-    switch(os.platform()) {
-        case 'darwin':
-            exec(`osascript -e 'tell app "Terminal" to do script "${launchPackagerPath}"'`);
-            break;
-        case 'linux':
-            // Here, we're assuming you might also want to run it on Linux. Adjust as needed.
-            const terminals = ["gnome-terminal", "konsole", "xterm", "terminator", "uxterm", "rxvt"];
-            for (let terminal of terminals) {
-                try {
-                    execSync(`which ${terminal}`);
-                    exec(`${terminal} -e 'bash -c "${launchPackagerPath}; bash"'`);
-                    break;
-                } catch (e) {
-                    // Do nothing, we'll just try the next terminal.
-                }
-            }
-            break;
-        default:
-            console.log('Unsupported OS. Please ensure Metro Bundler is running.');
-            break;
-    }
+    openTerminalWithCommand(launchPackagerPath);
 }
 
 function startAndroidApp() {
-    // Consolidate Metro Bundler and Android app start commands.
     const startMetroBundler = `cd ${process.cwd()} && ENVFILE=${envFileName} npx react-native start`;
     const startAndroidAppCmd = `cd ${process.cwd()} && ENVFILE=${envFileName} npx react-native run-android`;
     const consolidatedCommand = `${startMetroBundler} && ${startAndroidAppCmd}`;
     
-    switch(os.platform()) {
-        case 'darwin':
-            exec(`osascript -e 'tell app "Terminal" to do script "${consolidatedCommand}"'`);
-            break;
-        case 'linux':
-            const terminals = ["gnome-terminal", "konsole", "xterm", "terminator", "uxterm", "rxvt"];
-            for (let terminal of terminals) {
-                try {
-                    execSync(`which ${terminal}`);
-                    exec(`${terminal} -e 'bash -c "${consolidatedCommand}; bash"'`);
-                    break;
-                } catch (e) {
-                    // Do nothing, we'll just try the next terminal.
-                }
-            }
-            break;
-        default:
-            console.log('Please ensure Metro Bundler is running.');
-            break;
-    }
+    openTerminalWithCommand(consolidatedCommand);
 }
 
 function startApp(platform, envFileName) {
@@ -139,5 +107,47 @@ function cleanWatchmanCache() {
         
     } catch (error) {
         console.error('Failed to clean Watchman cache:', error.message);
+    }
+}
+
+function isPortInUse(port) {
+    return new Promise((resolve) => {
+        const server = require('net').createServer();
+        server.once('error', function(err) {
+            if (err.code === 'EADDRINUSE') {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        });
+        server.once('listening', function() {
+            server.close();
+            resolve(false);
+        });
+        server.listen(port);
+    });
+}
+
+// New function to consolidate the terminal opening logic
+function openTerminalWithCommand(command) {
+    switch(os.platform()) {
+        case 'darwin':
+            exec(`osascript -e 'tell app "Terminal" to do script "${command}"'`);
+            break;
+        case 'linux':
+            const terminals = ["gnome-terminal", "konsole", "xterm", "terminator", "uxterm", "rxvt"];
+            for (let terminal of terminals) {
+                try {
+                    execSync(`which ${terminal}`);
+                    exec(`${terminal} -e 'bash -c "${command}; bash"'`);
+                    break;  // Exit loop once a terminal is found and the command is executed
+                } catch (e) {
+                    // Do nothing, we'll just try the next terminal.
+                }
+            }
+            break;
+        default:
+            console.log('Unsupported OS. Please ensure Metro Bundler is running.');
+            break;
     }
 }
