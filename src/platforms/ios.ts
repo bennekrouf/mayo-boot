@@ -15,11 +15,8 @@ export const cleanWatchmanCache = () => {
     try {
         execSync('watchman watch-del-all', { stdio: 'inherit' });
         execSync('watchman shutdown-server', { stdio: 'inherit' });
-        
         console.log(`Resetting Watchman watch for ${projectPath}...`);
-        execSync(`watchman watch-del '${projectPath}'`, { stdio: 'inherit' });
         execSync(`watchman watch-project '${projectPath}'`, { stdio: 'inherit' });
-        
     } catch (error:any) {
         console.error('Failed to clean Watchman cache:', error?.message);
     }
