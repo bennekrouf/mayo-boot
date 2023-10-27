@@ -1,20 +1,20 @@
 {
-  "name": "rn-boot",
-  "version": "1.0.12",
+  "name": "mayo-boot",
+  "version": "1.0.13",
   "description": "A launcher for running any react-native apps on linux or iOS",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "rn-boot": "./dist/cli.js"
+    "mayo-boot": "./dist/cli.js"
   },
   "dependencies": {
     "react-native-config": "^1.5.1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bennekrouf/rn-boot.git"
+    "url": "git+https://github.com/bennekrouf/mayo-boot.git"
   },
   "keywords": [],
   "author": "",

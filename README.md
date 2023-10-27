@@ -1,4 +1,4 @@
-# rn-boot
+# mayo-boot
 
 A simple CLI tool to seamlessly start your React Native app with different environment configurations. It will handle your environment settings and decide whether to run the app on iOS or Android based on your operating system or the platform argument provided.
 
@@ -7,7 +7,7 @@ A simple CLI tool to seamlessly start your React Native app with different envir
 You can run it directly using npx:
 
 ```bash
-npx rn-boot [environmentName] [platform]
+npx mayo-boot [environmentName] [platform]
 ```
 
 ## Requirements
@@ -48,7 +48,7 @@ ANOTHER_CONFIG=SomeValue
 Navigate to your React Native project directory and run:
 
 ```bash
-rn-boot [environmentName] [platform]
+mayo-boot [environmentName] [platform]
 ```
 
 
@@ -57,13 +57,13 @@ rn-boot [environmentName] [platform]
 To start the local environment for the default platform based on OS:
 
 ```bash
-rn-boot
+mayo-boot
 ```
 
 To specify both an environment and a platform:
 
 ```bash
-rn-boot staging android
+mayo-boot staging android
 ```
 
 The command above will utilize the .env.local file for environment configurations and then launch the appropriate version of the app on the specified platform (iOS or Android).
