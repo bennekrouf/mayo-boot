@@ -33,8 +33,8 @@ const startMetroBundler = async (): Promise<void> => {
     killAllMetroInstances();
     
     if (os.platform() === 'linux') {
-        execSync('npx react-native start', { stdio: 'inherit' });
-        await sleep(5000);
+        execSync('npx react-native start --reset-cache', { stdio: 'inherit' });
+        // await sleep(5000);
         return;
     }
 
@@ -46,7 +46,7 @@ const startMetroBundler = async (): Promise<void> => {
 
     console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
     openTerminalWithCommand(launchPackagerPath);
-    await sleep(5000);
+    // await sleep(5000);
 };
 
 const startIOSApp = (envFileName: string): void => {
