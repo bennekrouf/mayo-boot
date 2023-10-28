@@ -28,8 +28,16 @@ export const bundleForiOS = (entryPoint:any) => {
     execSync(bundleCommand, { stdio: 'inherit' });
 }
 
-export const installPods = () => {
+export const installPods = (forceInstall = false) => {
+    const projectPath = process.cwd();
+
     if (os.platform() === 'darwin') {  // Check if platform is macOS
+        if (forceInstall) {
+            console.log('Force flag detected, removing Pods and Podfile.lock...');
+            execSync('rm -Rf Pods', { cwd: `${projectPath}/ios`, stdio: 'inherit' });
+            execSync('rm -f Podfile.lock', { cwd: `${projectPath}/ios`, stdio: 'inherit' });
+        }
+
         console.log('Installing pods...');
         execSync('npx pod-install', { stdio: 'inherit' });
     }

@@ -11,6 +11,8 @@ import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } 
 import { killAllMetroInstances } from './killAllMetroInstances';
 import { installDependencies } from './installDependencies';
 
+const forceInstall = process.argv.includes('-f') || process.argv.includes('--force');
+
 const environment: string = process.argv[2] || 'local';
 const platformArg: string | null = process.argv[3] || null;
 const envFileName: string = `.env.${environment}`;
@@ -32,7 +34,7 @@ const isPortInUse = (port: number): Promise<boolean> => new Promise(resolve => {
 
 const startMetroBundler = async (): Promise<void> => {
     killAllMetroInstances();
-    installDependencies();
+    installDependencies(forceInstall);
 
     if (os.platform() === 'linux') {
         execSync('npx react-native start --reset-cache', { stdio: 'inherit' });
@@ -41,7 +43,7 @@ const startMetroBundler = async (): Promise<void> => {
     }
 
     if(os.platform() === 'darwin') {
-        installPods();
+        installPods(forceInstall);
     }
 
     const launchPackagerPath: string = getLaunchPackagerPath();

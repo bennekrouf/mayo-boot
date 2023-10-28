@@ -1,8 +1,13 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 
-export const installDependencies = () => {
+export const installDependencies = (forceInstall = false) => {
     const projectPath = process.cwd();
+
+    if (forceInstall) {
+        console.log('Force flag detected, removing node_modules...');
+        execSync('rm -Rf node_modules', { stdio: 'inherit' });
+    }
 
     if (fs.existsSync(`${projectPath}/package-lock.json`)) {
         console.log('Detected package-lock.json, running npm install...');

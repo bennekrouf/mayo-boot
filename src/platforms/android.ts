@@ -1,6 +1,5 @@
 import path from 'path';
 import { execSync } from 'child_process';
-import { openTerminalWithCommand } from '../openTerminalWithCommand';
 
 export const cleanAndroidBuildArtifacts = (processCwd: string): void => {
     console.log('Cleaning Android build artifacts...');
