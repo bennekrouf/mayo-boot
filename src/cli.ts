@@ -7,8 +7,9 @@ import net from 'net';
 
 import { openTerminalWithCommand } from './openTerminalWithCommand';
 import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
-import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS } from './platforms/ios';
+import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } from './platforms/ios';
 import { killAllMetroInstances } from './killAllMetroInstances';
+import { installDependencies } from './installDependencies';
 
 const environment: string = process.argv[2] || 'local';
 const platformArg: string | null = process.argv[3] || null;
@@ -31,11 +32,16 @@ const isPortInUse = (port: number): Promise<boolean> => new Promise(resolve => {
 
 const startMetroBundler = async (): Promise<void> => {
     killAllMetroInstances();
-    
+    installDependencies();
+
     if (os.platform() === 'linux') {
         execSync('npx react-native start --reset-cache', { stdio: 'inherit' });
         // await sleep(5000);
         return;
+    }
+
+    if(os.platform() === 'darwin') {
+        installPods();
     }
 
     const launchPackagerPath: string = getLaunchPackagerPath();

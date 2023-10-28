@@ -27,3 +27,10 @@ export const bundleForiOS = (entryPoint:any) => {
     const bundleCommand = `npx react-native bundle --entry-file='${entryPoint}' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'`;
     execSync(bundleCommand, { stdio: 'inherit' });
 }
+
+export const installPods = () => {
+    if (os.platform() === 'darwin') {  // Check if platform is macOS
+        console.log('Installing pods...');
+        execSync('npx pod-install', { stdio: 'inherit' });
+    }
+}
