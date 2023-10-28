@@ -5,7 +5,6 @@ import os from 'os';
 import path from 'path';
 import net from 'net';
 
-import { openTerminalWithCommand } from './openTerminalWithCommand';
 import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
 import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } from './platforms/ios';
 import { killAllMetroInstances } from './killAllMetroInstances';
@@ -52,14 +51,15 @@ const startMetroBundler = async (): Promise<void> => {
 
     if(os.platform() === 'darwin') {
         const launchPackagerPath: string = getLaunchPackagerPath();
-        console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
-        execSync(`sh ${launchPackagerPath}`, { stdio: 'inherit' });
+        const commandContent: string = fs.readFileSync(launchPackagerPath, 'utf-8');
+        console.log(`Starting Metro Bundler using content from: ${launchPackagerPath}`);
+        execSync(commandContent, { stdio: 'inherit' });
     }
     // await sleep(5000);
 };
 
 const startIOSApp = (envFileName: string): void => {
-    const platformCommand: string = `ENVFILE=${envFileName} npx react-native run-ios`;
+    const platformCommand: string = `ENVFILE=${envFileName} npx react-native run-ios --no-packager`;
     console.log('Attempting to start the app on iOS...');
     execSync(platformCommand, { stdio: 'inherit' });
 };
@@ -74,11 +74,10 @@ const getEntryPoint = (): string => {
     console.log(`Starting with environment file: ${envFileName}`);
     const platform: string = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
     
-    
     if (platform === 'android') {
         cleanAndroidBuildArtifacts(process.cwd());
         startAndroidApp(process.cwd(), envFileName);
-    } else {
+    } else if (platform === 'ios' || (os.platform() === 'darwin' && platformArg !== 'android')) {
         cleanXcodeDerivedData();
         cleanWatchmanCache();
         bundleForiOS(getEntryPoint());

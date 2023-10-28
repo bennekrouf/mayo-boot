@@ -9,6 +9,6 @@ export const cleanAndroidBuildArtifacts = (processCwd: string): void => {
 };
 
 export const startAndroidApp = (processCwd: string, envFileName: string): void => {
-    const startAndroidAppCmd = `cd ${processCwd} && ENVFILE=${envFileName} npx react-native run-android`;
+    const startAndroidAppCmd = `cd ${processCwd} && ENVFILE=${envFileName} npx react-native run-android --no-packager`;
     execSync(startAndroidAppCmd, { stdio: 'inherit' });
 };
