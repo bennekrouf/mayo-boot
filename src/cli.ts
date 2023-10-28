@@ -35,6 +35,9 @@ const isPortInUse = (port: number): Promise<boolean> => new Promise(resolve => {
 const startMetroBundler = async (): Promise<void> => {
     killAllMetroInstances();
     installDependencies(forceInstall);
+    if(os.platform() === 'darwin') {
+        installPods(forceInstall);
+    }
 
     if (os.platform() === 'linux') {
         execSync('npx react-native start --reset-cache', { stdio: 'inherit' });
@@ -42,18 +45,16 @@ const startMetroBundler = async (): Promise<void> => {
         return;
     }
 
-    if(os.platform() === 'darwin') {
-        installPods(forceInstall);
-    }
-
-    const launchPackagerPath: string = getLaunchPackagerPath();
     if (await isPortInUse(8081)) {
         console.log('Metro Bundler is already running on port 8081. Skipping...');
         return;
     }
 
-    console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
-    openTerminalWithCommand(launchPackagerPath);
+    if(os.platform() === 'darwin') {
+        const launchPackagerPath: string = getLaunchPackagerPath();
+        console.log(`Starting Metro Bundler with: ${launchPackagerPath}`);
+        execSync(`sh ${launchPackagerPath}`, { stdio: 'inherit' });
+    }
     // await sleep(5000);
 };
 
