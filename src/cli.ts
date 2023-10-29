@@ -9,6 +9,7 @@ import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android
 import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } from './platforms/ios';
 import { killAllMetroInstances } from './killAllMetroInstances';
 import { installDependencies } from './installDependencies';
+import { addGoogleServiceInfoIfNotExists } from './addGoogleServiceInfoIfNotExists';
 
 const forceInstall = process.argv.includes('-f') || process.argv.includes('--force');
 
@@ -80,6 +81,9 @@ const getEntryPoint = (): string => {
     } else if (platform === 'ios' || (os.platform() === 'darwin' && platformArg !== 'android')) {
         cleanXcodeDerivedData();
         cleanWatchmanCache();
+
+        addGoogleServiceInfoIfNotExists();
+        
         bundleForiOS(getEntryPoint());
         startIOSApp(envFileName);
     }

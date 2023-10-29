@@ -1,6 +1,6 @@
 {
   "name": "mayo-boot",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "A launcher for running any react-native apps on linux or iOS",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "os": "^0.1.2",
-    "react-native-config": "^1.5.1"
+    "react-native-config": "^1.5.1",
+    "xcode": "^3.0.1"
   },
   "repository": {
     "type": "git",
