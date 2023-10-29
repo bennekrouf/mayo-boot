@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "typeRoots": ["./types", "./node_modules/@types"],
-    "types": ["xcode"],
+    "types": ["xcode", "node"],
     "jsx": "react",
     "outDir": "./dist",  // specify the output directory
     "rootDir": "./src",  // specify the root directory of source files
