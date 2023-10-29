@@ -1,7 +1,7 @@
 import xcode from 'xcode';
 import fs from 'fs';
 
-const addGoogleServiceInfoIfNotExists = (): void => {
+export const addGoogleServiceInfoIfNotExists = (): void => {
     const projectPath = 'Your/Project/Path/YourProject.xcodeproj/project.pbxproj';
     const project = xcode.project(projectPath);
 
