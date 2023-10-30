@@ -1,8 +1,26 @@
 import xcode from 'xcode';
 import fs from 'fs';
+import path from 'path';
+
+const getProjectPath = (): string | null => {
+    const iosDir = path.join(process.cwd(), 'ios');
+    const xcodeProjects = fs.readdirSync(iosDir).filter(name => name.endsWith('.xcodeproj'));
+
+    if (xcodeProjects.length === 0) {
+        return null;
+    }
+
+    return path.join(iosDir, xcodeProjects[0], 'project.pbxproj');
+};
 
 export const addGoogleServiceInfoIfNotExists = (): void => {
-    const projectPath = 'Your/Project/Path/YourProject.xcodeproj/project.pbxproj';
+    const projectPath = getProjectPath();
+
+    if (!projectPath) {
+        console.error('Could not find an Xcode project in the ios directory.');
+        return;
+    }
+
     const project = xcode.project(projectPath);
 
     project.parse((err:any) => {
@@ -12,7 +30,7 @@ export const addGoogleServiceInfoIfNotExists = (): void => {
         }
 
         // Path to your GoogleService-Info.plist file.
-        const plistFilePath = 'Path/To/Your/GoogleService-Info.plist';
+        const plistFilePath = 'ios/GoogleService-Info.plist';
         if (!fs.existsSync(plistFilePath)) {
             console.error('File does not exist:', plistFilePath);
             return;
