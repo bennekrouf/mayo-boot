@@ -10,6 +10,7 @@ import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } 
 import { killAllMetroInstances } from './killAllMetroInstances';
 import { installDependencies } from './installDependencies';
 import { addGoogleServiceInfoIfNotExists } from './addGoogleServiceInfoIfNotExists';
+import { checkMissingiOSResources } from './checkMissingiOSResources';
 
 const forceInstall = process.argv.includes('-f') || process.argv.includes('--force');
 
@@ -83,6 +84,7 @@ const getEntryPoint = (): string => {
         cleanWatchmanCache();
 
         addGoogleServiceInfoIfNotExists();
+        checkMissingiOSResources();
         
         bundleForiOS(getEntryPoint());
         startIOSApp(envFileName);
