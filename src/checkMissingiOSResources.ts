@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
 import path from 'path';
+import { Logger } from 'mayo-logger';
 
 export const checkMissingiOSResources = (): void => {
     const XCODEPROJ_DIR: string | undefined = execSync('find ios -name "*.xcodeproj" -type d | head -1', { encoding: 'utf-8' }).trim();
@@ -14,10 +15,12 @@ export const checkMissingiOSResources = (): void => {
         for (const resource of RESOURCE_PATHS) {
             const resourcePath = path.join(XCODEPROJ_DIR, resource);
             if (!fs.existsSync(resourcePath)) {
-                console.error(`Missing: ${resourcePath}`);
+                Logger.error(`Missing: ${resourcePath}`, { tag: 'checkMissingiOSResources' });
+            } else {
+                Logger.info(`Resource exists: ${resourcePath}`, { tag: 'checkMissingiOSResources' });
             }
         }
     } else {
-        console.error(`Unable to locate: ${PBXPROJ_PATH}`);
+        Logger.error(`Unable to locate: ${PBXPROJ_PATH}`, { tag: 'checkMissingiOSResources' });
     }
 };

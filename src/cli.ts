@@ -4,6 +4,7 @@ import { execSync } from 'child_process';
 import os from 'os';
 import path from 'path';
 import net from 'net';
+import { Logger } from 'mayo-logger';
 
 import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
 import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } from './platforms/ios';
@@ -41,20 +42,21 @@ const startMetroBundler = async (): Promise<void> => {
     }
 
     if (os.platform() === 'linux') {
+        Logger.info('Starting Metro Bundler on Linux', { tag: 'MetroBundler' });
         execSync('npx react-native start --reset-cache', { stdio: 'inherit' });
         // await sleep(5000);
         return;
     }
 
     if (await isPortInUse(8081)) {
-        console.log('Metro Bundler is already running on port 8081. Skipping...');
+        Logger.info('Metro Bundler is already running on port 8081. Skipping...', { tag: 'MetroBundler' });
         return;
     }
 
     if(os.platform() === 'darwin') {
         const launchPackagerPath: string = getLaunchPackagerPath();
+        Logger.info(`Starting Metro Bundler using content from: ${launchPackagerPath}`, { tag: 'MetroBundler' });
         const commandContent: string = fs.readFileSync(launchPackagerPath, 'utf-8');
-        console.log(`Starting Metro Bundler using content from: ${launchPackagerPath}`);
         execSync(commandContent, { stdio: 'inherit' });
     }
     // await sleep(5000);
@@ -62,32 +64,46 @@ const startMetroBundler = async (): Promise<void> => {
 
 const startIOSApp = (envFileName: string): void => {
     const platformCommand: string = `ENVFILE=${envFileName} npx react-native run-ios --no-packager`;
-    console.log('Attempting to start the app on iOS...');
-    execSync(platformCommand, { stdio: 'inherit' });
+    Logger.info('Attempting to start the app on iOS...', { tag: 'IOSAppStart' });
+    try {
+        execSync(platformCommand, { stdio: 'inherit' });
+    } catch (error) {
+        Logger.error('Failed to start the iOS app', { error }, { tag: 'IOSAppStart' });
+    }
 };
 
 const getEntryPoint = (): string => {
     const possibleEntryPoints: string[] = ['index.js', 'index.ts', 'index.tsx'];
-    return possibleEntryPoints.find(entry => fs.existsSync(path.join(process.cwd(), entry))) || 
-           (() => { throw new Error('No valid entry point (index.js, index.ts, or index.tsx) was found.') })();
+    const entryPoint = possibleEntryPoints.find(entry => fs.existsSync(path.join(process.cwd(), entry)));
+    if (!entryPoint) {
+        Logger.error('No valid entry point (index.js, index.ts, or index.tsx) was found.', { tag: 'EntryPointCheck' });
+        throw new Error('No valid entry point was found.');
+    }
+    Logger.info(`Entry point found: ${entryPoint}`, { tag: 'EntryPointCheck' });
+    return entryPoint;
 };
 
 (async () => {
-    console.log(`Starting with environment file: ${envFileName}`);
-    const platform: string = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
-    
-    if (platform === 'android') {
-        cleanAndroidBuildArtifacts(process.cwd());
-        startAndroidApp(process.cwd(), envFileName);
-    } else if (platform === 'ios' || (os.platform() === 'darwin' && platformArg !== 'android')) {
-        cleanXcodeDerivedData();
-        cleanWatchmanCache();
-
-        addGoogleServiceInfoIfNotExists();
-        checkMissingiOSResources();
+    try {
+        Logger.info(`Starting with environment file: ${envFileName}`, { tag: 'AppStartup' });
+        const platform: string = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
         
-        bundleForiOS(getEntryPoint());
-        startIOSApp(envFileName);
+        if (platform === 'android') {
+            cleanAndroidBuildArtifacts(process.cwd());
+            startAndroidApp(process.cwd(), envFileName);
+        } else if (platform === 'ios' || (os.platform() === 'darwin' && platformArg !== 'android')) {
+            cleanXcodeDerivedData();
+            cleanWatchmanCache();
+
+            addGoogleServiceInfoIfNotExists();
+            checkMissingiOSResources();
+            
+            bundleForiOS(getEntryPoint());
+            startIOSApp(envFileName);
+        }
+        await startMetroBundler();
+        Logger.info('Application started successfully', { tag: 'AppStartup' });
+    } catch (error) {
+        Logger.error('An error occurred during the application start process', { error }, { tag: 'AppStartup' });
     }
-    await startMetroBundler();
 })();
