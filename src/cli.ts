@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 import fs from 'fs';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import os from 'os';
 import path from 'path';
 import net from 'net';
+
+import http from 'http';
 
 import { cleanAndroidBuildArtifacts, startAndroidApp } from './platforms/android';
 import { cleanXcodeDerivedData, cleanWatchmanCache, bundleForiOS, installPods } from './platforms/ios';
@@ -12,7 +14,6 @@ import { installDependencies } from './installDependencies';
 import { addGoogleServiceInfoIfNotExists } from './addGoogleServiceInfoIfNotExists';
 
 const forceInstall = process.argv.includes('-f') || process.argv.includes('--force');
-
 const environment: string = process.argv[2] || 'local';
 const platformArg: string | null = process.argv[3] || null;
 const envFileName: string = `.env.${environment}`;
@@ -35,14 +36,8 @@ const isPortInUse = (port: number): Promise<boolean> => new Promise(resolve => {
 const startMetroBundler = async (): Promise<void> => {
     killAllMetroInstances();
     installDependencies(forceInstall);
-    if(os.platform() === 'darwin') {
+    if (os.platform() === 'darwin') {
         installPods(forceInstall);
-    }
-
-    if (os.platform() === 'linux') {
-        execSync('npx react-native start --reset-cache', { stdio: 'inherit' });
-        // await sleep(5000);
-        return;
     }
 
     if (await isPortInUse(8081)) {
@@ -50,13 +45,18 @@ const startMetroBundler = async (): Promise<void> => {
         return;
     }
 
-    if(os.platform() === 'darwin') {
-        const launchPackagerPath: string = getLaunchPackagerPath();
-        const commandContent: string = fs.readFileSync(launchPackagerPath, 'utf-8');
-        console.log(`Starting Metro Bundler using content from: ${launchPackagerPath}`);
-        execSync(commandContent, { stdio: 'inherit' });
-    }
-    // await sleep(5000);
+    const metroBundlerProcess = spawn('npx', ['react-native', 'start', '--reset-cache'], {
+        stdio: ['inherit', 'pipe', 'pipe'], // Only stdin is inherited
+    });
+
+    // Log Metro Bundler's output in real-time
+    metroBundlerProcess.stdout.on('data', (data) => {
+        process.stdout.write(data);
+    });
+
+    metroBundlerProcess.stderr.on('data', (data) => {
+        process.stderr.write(data);
+    });
 };
 
 const startIOSApp = (envFileName: string): void => {
@@ -73,8 +73,11 @@ const getEntryPoint = (): string => {
 
 (async () => {
     console.log(`Starting with environment file: ${envFileName}`);
-    const platform: string = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
+    const platform = platformArg || (os.platform() === 'darwin' ? 'ios' : 'android');
     
+    // Start the Metro Bundler asynchronously
+    await startMetroBundler();
+
     if (platform === 'android') {
         cleanAndroidBuildArtifacts(process.cwd());
         startAndroidApp(process.cwd(), envFileName);
@@ -87,5 +90,6 @@ const getEntryPoint = (): string => {
         bundleForiOS(getEntryPoint());
         startIOSApp(envFileName);
     }
-    await startMetroBundler();
+    // The script does not wait for the Metro Bundler to start or finish.
+    // Metro Bundler runs in parallel to the following commands.
 })();
