@@ -1,21 +1,22 @@
 import fs from 'fs';
 import { execSync } from 'child_process';
+import { Logger } from 'mayo-logger'; // Import Logger from mayo-logger
 
 export const installDependencies = (forceInstall = false) => {
     const projectPath = process.cwd();
 
     if (forceInstall) {
-        console.log('Force flag detected, removing node_modules...');
+        Logger.info('Force flag detected, removing node_modules...', { tag: 'installDependencies' });
         execSync('rm -Rf node_modules', { stdio: 'inherit' });
     }
 
     if (fs.existsSync(`${projectPath}/package-lock.json`)) {
-        console.log('Detected package-lock.json, running npm install...');
+        Logger.info('Detected package-lock.json, running npm install...', { tag: 'installDependencies' });
         execSync('npm install', { stdio: 'inherit' });
     } else if (fs.existsSync(`${projectPath}/yarn.lock`)) {
-        console.log('Detected yarn.lock, running yarn install...');
+        Logger.info('Detected yarn.lock, running yarn install...', { tag: 'installDependencies' });
         execSync('yarn install', { stdio: 'inherit' });
     } else {
-        console.warn('No package-lock.json or yarn.lock detected. You may need to run npm install or yarn install manually.');
+        Logger.warn('No package-lock.json or yarn.lock detected. You may need to run npm install or yarn install manually.', { tag: 'installDependencies' });
     }
-}
+};

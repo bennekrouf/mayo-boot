@@ -1,15 +1,17 @@
 {
   "name": "mayo-boot",
-  "version": "1.1.2",
+  "version": "1.2.4",
   "description": "A launcher for running any react-native apps on linux or iOS",
   "main": "dist/cli.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
     "mayo-boot": "./dist/cli.js"
   },
   "dependencies": {
+    "mayo-logger": "^1.1.0",
     "os": "^0.1.2",
     "react-native-config": "^1.5.1",
     "xcode": "^3.0.1"

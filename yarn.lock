@@ -62,6 +62,11 @@ csstype@^3.0.2:
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.1.2.tgz"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
 
+mayo-logger@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mayo-logger/-/mayo-logger-1.1.0.tgz#ee1236a4aa791d3bece7dd1315c28458e6868884"
+  integrity sha512-Lfnjppm5kD+7uv0OWHwDOUYOB19p2pK0AqLXihZc2UH5lPi3O3xN+dFGnHUoFHfdWdUqsVgYvFoUJQ5OAOua1Q==
+
 os@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/os/-/os-0.1.2.tgz#f29a50c62908516ba42652de42f7038600cadbc2"
