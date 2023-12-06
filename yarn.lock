@@ -63,9 +63,11 @@ csstype@^3.0.2:
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
 
 mayo-logger@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/mayo-logger/-/mayo-logger-1.1.0.tgz#ee1236a4aa791d3bece7dd1315c28458e6868884"
-  integrity sha512-Lfnjppm5kD+7uv0OWHwDOUYOB19p2pK0AqLXihZc2UH5lPi3O3xN+dFGnHUoFHfdWdUqsVgYvFoUJQ5OAOua1Q==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/mayo-logger/-/mayo-logger-1.2.0.tgz#bb43867725ede6bfb608ea75791532601299a119"
+  integrity sha512-ENdvl1ZYZ4InjZgB1CPnwZl9j7yz62nhQrvYfz9KaWZOqxoAdji9zmDx92eAvjxVZjCkk511HSfyRz+0M5r1og==
+  dependencies:
+    typescript "^5.3.2"
 
 os@^0.1.2:
   version "0.1.2"
@@ -101,6 +103,11 @@ stream-buffers@2.2.x:
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
 typescript@^5.2.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.2.tgz#00d1c7c1c46928c5845c1ee8d0cc2791031d4c43"
+  integrity sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==
+
+typescript@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.2.tgz#00d1c7c1c46928c5845c1ee8d0cc2791031d4c43"
   integrity sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==
